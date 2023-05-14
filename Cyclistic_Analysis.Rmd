@@ -1,0 +1,231 @@
+---
+
+---
+
+\-\--
+title: "Cyclistic Analysis"
+output: html_notebook
+author: Jonathan Mastin
+date: 05/11/2023
+\-\--
+
+## Scenario:
+
+As a junior data analyst working in the marketing analyst team at Cyclistic, a bike-share company in Chicago. The dirsector of marketing believes the company's future success depends on maximizing the number of annual memberships. Therefore, my team wants to understand how casual riders and annual members use Cyclistic bikes differently. From these insights, my team will design a new marketing strategy to convert casual riders into annual members. First, Cyclistic executives must approve my recommendations, so they must be backed up with compelling data insights and professional data visualizations.
+
+## Background:
+
+In 2016, Cyclistic launched a successful bike-share offering. Since then, the program has grown to a fleet of 5,824 bicycles that are geotracked and locked into a network of 692 stations across Chicago. The bikes can be unlocked from one station and returned to any other station in the system anytime.
+
+Until now, Cyclistic's marketing strategy relied on building general awareness and appealing to broad consumer segments. One approach that helped make these things possible was the flexibility of its pricing plans: single-ride passes, full-day passes, and annual memberships. Customers who purchase single-ride or full-day passes are referred to as casual riders. Customers who purchase annual memberships are Cyclistic members.
+
+Cyclistic's finance analysts have concluded that annual members are much more profitable than casual riders. Although the pricing flexibility helps Cyclistic attract more customers, Moreno believes that maximizing the number of annual members will be key to future growth. Rather than creating a marketing campaign that targets all-new customers, Moreno believes there is a very good chance to convert casual riders into members. She notes that casual riders are already aware of the Cyclistic program and have chosen Cyclistic for their mobility needs.
+
+Moreno has set a clear goal: Design marketing strategies aimed at converting casual riders into annual members. In order to do that, however, the marketing analyst team needs to better understand how annual members and casual riders differ, why casual riders would buy a membership, and how digital media could affect their marketing tactics. Moreno and her team are interested in analyzing the Cyclistic historical bike trip data to identify trends.
+
+## Characters:
+
+-   **Cyclistic:** A bike-share program that features more than 5,800 bicycles and 600 docking stations. Cyclistic sets itself apart by also offering reclining bikes, hand tricycles, and cargo bikes, making bike-share more inclusive to people with disabilities and riders who can't use a standard two-wheeled bike. The majority of riders opt for traditional bikes; about 8% of riders use the assistive options. Cyclistic users are more likely to ride for leisure, but about 30% use them to commute to work each day.
+-   **Lily Moreno:** The director of marketing and your manager. Moreno is responsible for the development of campaigns and initiatives to promote the bike-share program. These may include email, social media, and other channels.
+-   **Cyclistic marketing analytics team:** A team of data analysts who are responsible for collecting, analyzing, and reporting data that helps guide Cyclistic marketing strategy. You joined this team six months ago and have been busy learning about Cyclistic's mission and business goals --- as well as how you, as a junior data analyst, can help Cyclistic achieve them.
+-   **Cyclistic executive team:** The notoriously detail-oriented executive team will decide whether to approve the recommended marketing program.
+
+## Ask:
+
+-   Three questions will guide the future marketing program:
+    1.  How do annual members and casual riders use Cyclistic bikes differently?
+    2.  Why would casual riders buy Cyclistic annual memberships?
+    3.  How can Cyclistic use digital media to influence casual riders to become members?
+
+## Prepare:
+
+-   The data used is historical data from January 2021 until December 2021 (202101-divvy-tripdata.zip -\> 202112-divvy-tripdata.zip). The data will be extracted into a folder called **original_csv** which is a sub folder of **Data**, which is a sub folder of **Cyclistic** to help keep track of everything. The files have also been renamed to snake style 202101-divvy-tripdata.csv becomes 2021_01_divvy_trip_data.csv and so forth.
+
+## Process:
+
+In order to process the 5.5+ Million records, spreadsheets such as Excel nor Google Sheets could handle the amount of data. Therefore, Rstudio was used.
+
+Firstly, the packages needed to be installed and loaded.
+
+```{r}
+# Installing the packages
+install.packages("tidyverse")
+install.packages("janitor")
+install.packages("lubridate")
+install.packages("skimr")
+install.packages("here")
+install.packages("dplyr")
+
+# Load packages
+library(tidyverse)
+library(janitor)
+library(lubridate)
+library(ggplot2)
+library(skimr)
+library(here)
+library(dplyr)
+library(readr)
+```
+
+Secondly, the 12 .csv files would need to be read in using **read.csv** and renamed then combined into a single data frame.
+
+```{r}
+# Reading in the .csv files
+Jan_2021 <- read.csv("Desktop/Documents/Data_Analytics/Google_Data_Analytics_Professionial_Certification/Case_Studies/Case_Study_1/Cyclistic/Data/original_csv/2021_01_divvy_trip_data.csv")
+Feb_2021 <- read.csv("Desktop/Documents/Data_Analytics/Google_Data_Analytics_Professionial_Certification/Case_Studies/Case_Study_1/Cyclistic/Data/original_csv/2021_02_divvy_trip_data.csv")
+Mar_2021 <- read.csv("Desktop/Documents/Data_Analytics/Google_Data_Analytics_Professionial_Certification/Case_Studies/Case_Study_1/Cyclistic/Data/original_csv/2021_03_divvy_trip_data.csv")
+Apr_2021 <- read.csv("Desktop/Documents/Data_Analytics/Google_Data_Analytics_Professionial_Certification/Case_Studies/Case_Study_1/Cyclistic/Data/original_csv/2021_04_divvy_trip_data.csv")
+May_2021 <- read.csv("Desktop/Documents/Data_Analytics/Google_Data_Analytics_Professionial_Certification/Case_Studies/Case_Study_1/Cyclistic/Data/original_csv/2021_05_divvy_trip_data.csv")
+Jun_2021 <- read.csv("Desktop/Documents/Data_Analytics/Google_Data_Analytics_Professionial_Certification/Case_Studies/Case_Study_1/Cyclistic/Data/original_csv/2021_06_divvy_trip_data.csv")
+Jul_2021 <- read.csv("Desktop/Documents/Data_Analytics/Google_Data_Analytics_Professionial_Certification/Case_Studies/Case_Study_1/Cyclistic/Data/original_csv/2021_07_divvy_trip_data.csv")
+Aug_2021 <- read.csv("Desktop/Documents/Data_Analytics/Google_Data_Analytics_Professionial_Certification/Case_Studies/Case_Study_1/Cyclistic/Data/original_csv/2021_08_divvy_trip_data.csv")
+Sep_2021 <- read.csv("Desktop/Documents/Data_Analytics/Google_Data_Analytics_Professionial_Certification/Case_Studies/Case_Study_1/Cyclistic/Data/original_csv/2021_09_divvy_trip_data.csv")
+Oct_2021 <- read.csv("Desktop/Documents/Data_Analytics/Google_Data_Analytics_Professionial_Certification/Case_Studies/Case_Study_1/Cyclistic/Data/original_csv/2021_10_divvy_trip_data.csv")
+Nov_2021 <- read.csv("Desktop/Documents/Data_Analytics/Google_Data_Analytics_Professionial_Certification/Case_Studies/Case_Study_1/Cyclistic/Data/original_csv/2021_11_divvy_trip_data.csv")
+Dec_2021 <- read.csv("Desktop/Documents/Data_Analytics/Google_Data_Analytics_Professionial_Certification/Case_Studies/Case_Study_1/Cyclistic/Data/original_csv/2021_12_divvy_trip_data.csv")
+
+```
+
+In order to merge the 12 .csv files, they would need to be checked for any discrepancies with formatting. This is done by using **"str()"** function to list the structure of the data set. All 12 data sets have the identical structure.
+
+Based on the structure of the columns none of them require to be transformed. Therefore, we can move directly to combining all 12 .csv files. This is done by
+
+```{r}
+# Creating a combined single data set name
+Merged_df_2021 <- bind_rows(Jan_2021, Feb_2021, Mar_2021, Apr_2021, May_2021, Jun_2021, Jul_2021, Aug_2021, Sep_2021, Oct_2021, Nov_2021, Dec_2021)
+```
+
+From there we need to remove any empty columns and rows in the data frame, this is done by using the **remove_empty()** function.
+
+```{r}
+# Clean & remove any spaces
+Merged_df_2021 <- clean_names(Merged_df_2021)
+remove_empty(Merged_df_2021, which = c())
+```
+
+Before proceeding any further, review the **business task/the problem that is trying to be solved** to make sure we stay focused and not get carried away with trivial things.
+
+After reviewing the task, a handful of columns need to be added to the newly formed data frame. The columns that will be added are as follows:
+
+-   Day of the week
+-   Start hour
+-   Month
+-   Trip Duration
+
+```{r}
+# Creating column for day of the week
+Merged_df_2021$day_of_week <- wday(Merged_df_2021$started_at, label = T, abbr = T)
+
+# Setting up trip duration
+# Start Hour
+Merged_df_2021$starting_hour <- format(as.POSIXct(Merged_df_2021$started_at), "%H")
+# Month
+Merged_df_2021$month <- format(as.Date(Merged_df_2021$started_at), "%m")
+
+# Trip Duration
+Merged_df_2021$trip_duration <- difftime(Merged_df_2021$ended_at, Merged_df_2021$started_at, units = 'min')
+```
+
+## Analyze:
+
+After preparing and processing the data to transform it into clean data, it is cleaned another time because of the added columns.
+
+```{r}
+# Clean one more time
+Cleaned_merged_df_2021 <- Merged_df_2021[!(Merged_df_2021$trip_duration <= 0),]
+```
+
+Now the data gets analyzed to check for any key information or patters. Before, checking for patters or key information the business task is revisited to make sure the analysis stays on topic.
+
+1.  How do casual and annual members use their bikes differently throughout the week?
+2.  What are the peak hours of bike usage between both casual and annual members?
+3.  What does the bike usage look like throughout the year?
+4.  What is the average trip duration between casual and annual members?
+5.  What are the most popular stations among the casual and annual members?
+
+The findings are all handled with bar graphs in RStudio.
+
+```{r}
+# Creating a bar graph that compares number of rides by member type
+ggplot(data = Cleaned_merged_df_2021) +
+  geom_bar(mapping = aes(x = day_of_week, fill = member_casual), position = "dodge") +
+  labs(x = "Day of Week", y = "Number of Rides", fill = "Member Type", title = "Number of Rides by Member Type")
+
+
+# Creating a bar graph that compares number or rides per month by member type
+ggplot(data = Cleaned_merged_df_2021) +
+  geom_bar(mapping = aes(x = month, fill = member_casual), position = "dodge") +
+  labs(x = "Month", y = "Number of Rides", fill = "Member Type", title = "Number of Rides per Month")
+
+
+# Creating a bar graph per day per hour comparing the member types
+ggplot(data = Cleaned_merged_df_2021) +
+  geom_bar(mapping = aes(x = starting_hour, fill = member_casual)) +
+  facet_wrap(~day_of_week) +
+  labs(x = "Starting Hour", y = "Number of Rides", fill = "Member Type", title = "Hourly Use of Bikes Throughout the Week") +
+  theme(axis.text = element_text(size = 5))
+
+
+# Creating a bar graph to show the amount of rides by member type
+ggplot(data = Cleaned_merged_df_2021) +
+  geom_bar(mapping = aes(x = member_casual, fill = member_casual)) +
+  labs(x = "Member Type", y = "Number of Rides", fill = "Member Type", title = "Number of Rides by Member Type")
+```
+
+![](number_of_rides_by_member_type%20copy.png){width="357"}
+
+![](number_of_rides_by_member_type.png){width="345"}
+
+![](number_of_rides_per_month.png){width="345"}
+
+![](hourly_use_of_bikes_throughout_the_week.png)
+
+## Act:
+
+Based on the findings after the analysis.
+
+According to the data the casual members are mainly composed of tourists and or families who wish to spend their trips and or weekends sightseeing as well as carrying out leisure activities. This is backed by the analysis by month for the year and it shows that in the summer months manly June, July, and August the casual riders bike use are higher than the annual members.
+
+There's a strong inclination to believe that annual members are mainly compromised of working adults which use Cyclistic services as their means of commuting.
+
+There's a possibility that an exploit exists within the single ride pass which would allow irresponsible users to basically own a bike for themselves while only paying a fee for one-time use.
+
+Now, to answer Moreno's and her team's request, which was: To design marketing strategies to convert casual riders into annual members.
+
+According to the data, the breakdown of bike type usage shows that more people, both casual and members, ride the classic bike more often than the electric.
+
+```{r}
+# Creating a bar graph to compare the different types of bikes used
+ggplot(data = Cleaned_merged_df_2021) +
+  geom_bar(mapping = aes(x = rideable_type, fill = rideable_type)) +
+  labs(x = "Bike Type", y = "Amount the type was used", fill = "Bike Type", title = "Amount of Bike Types Used")
+
+# Creating a bar graph to see the brake down with casual riders
+ggplot(data = casual_member_df) +
+  geom_bar(mapping = aes(x = rideable_type, fill = rideable_type)) +
+  labs(x = "Bike Type", y = "Amount the type was used", fill = "Bike Type", title = "Amount of Bike Types Used by Casual Riders")
+
+
+# Creating a bar graph to see the breakdown with annual members
+ggplot(annual_member_df) +
+  geom_bar(mapping = aes(x = rideable_type, fill = rideable_type)) +
+  labs(x = "Bike Type", y = "Amount the type was used", fill = "Bike Type", title = "Amount of Bike Types Used by Annual Members")
+```
+
+![](amount_of_bike_types_used.png)
+
+![](amount_of_bike_types_used_casual_member.png){width="608"}
+
+![](amount_of_bike_types_used_annual_member.png)
+
+As a result, the marketing team would create a marketing campaign with the classic bike in mind.
+
+As a follow up to the previous suggestions, advertise promotions on the previous point whereby current casual members would be able to upgrade to annual members at a discount.
+
+Strategically enforcing location-based advertisements (featured on social media) to target the popular stations among the casual members.
+
+Recommendations to encourage casual members to upgrade to annual ones are as follows:
+
+-   Increase the pricing of single-day & full-day passes. By strategically pricing it higher, it would appeal to upgrade to an annual membership.
+-   Charge/Impose additional fees for non-annual members based on trip duration. A great start would be to impose an additional 10% of your membership fee every 10 minutes after hitting the daily quota.
+-   Charge a fee for not returning bike/droping them off at a station by midnight of the current day. Therefore, having all bikes having a start and ending station.
